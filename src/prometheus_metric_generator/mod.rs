@@ -1,0 +1,1 @@
+pub mod prometheus_metric_generator;
