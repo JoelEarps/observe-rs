@@ -17,7 +17,7 @@ async fn root() -> &'static str {
 }
 
 async fn ready_check(State(metrics): State<Arc<Mutex<Metrics>>>)-> (StatusCode, String) {
-    metrics.lock().await.inc_active_connections();
+    metrics.lock().await.inc_active_connections(1);
     (StatusCode::OK, format!("{}", "OK"))
 }
 

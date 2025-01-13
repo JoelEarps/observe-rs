@@ -1,15 +1,6 @@
 use std::default;
 
 use prometheus_client::{encoding::EncodeMetric, metrics::{counter::{self, Atomic, Counter}, gauge::Gauge}};
-
-/*
-Input = vector of metrics structs
-
-Aim: Generate vector types, perform prometheus logic required and set up access control
-*/
-
-// Question - do we need custom error handling where there is no implementation for a type
-
 struct BaseMetric<T> {
     metric: T,
     title: String,
@@ -85,19 +76,6 @@ impl GaugeMetricFunctionality<i64> for BaseMetric<Gauge>{
     }
 }
 
-
-// // Test Scenarios
-// /*
-// 1. Create Counter
-//     a. Increment by one and assert on value
-//     b. Increment by custom val and assert by value
-// 2. Create Gauge
-//     a. Increment by one and assert on value
-//     b. Increment by custom val and assert by value
-//     c. Decrement by one and assert on value
-//     d. Decrement by custom val and assert by value
-// 3. Create array of types based on dict input and then implement a find function to perform the actions 
-//  */
 #[cfg(test)]
 mod tests{
     use super::*;
@@ -108,10 +86,8 @@ mod tests{
         assert_eq!(test_metric.get_metric_value(), 0);
         test_metric.increment_by_one();
         assert_eq!(test_metric.get_metric_value(), 1);
-        // Have to cast as u64 - is there a more clever way to do this? Custom Errors for Unsupported Types?
-        test_metric.increment_by_custom_value(20 as u64);
+        test_metric.increment_by_custom_value(20);
         assert_eq!(test_metric.get_metric_value(), 21);
-        
     }
 
     #[test]
@@ -128,6 +104,5 @@ mod tests{
         assert_eq!(test_metric_gauge.get_metric_value(), 10);
         test_metric_gauge.reset_to_zero();
         assert_eq!(test_metric_gauge.get_metric_value(), 0);
-    
     }
 }

@@ -19,8 +19,8 @@ pub struct Metrics {
 }
 
 impl Metrics {
-    pub fn inc_active_connections(&self) {
-        self.active_connections.inc_by(4);
+    pub fn inc_active_connections(&self, increment: i64) {
+        self.active_connections.inc_by(increment);
     }
 }
 
