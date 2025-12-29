@@ -79,21 +79,6 @@ pub trait GaugeTrait: Clone + Send + Sync + 'static {
 pub trait HistogramTrait: Clone + Send + Sync + 'static {
     /// Record an observation in the histogram.
     fn observe(&self, value: f64);
-
-    /// Get the current histogram sum and count.
-    ///
-    /// Returns `(sum, count)` where:
-    /// - `sum` is the total of all observed values
-    /// - `count` is the number of observations
-    ///
-    /// **Note:** This is primarily useful for testing with the mock backend.
-    /// Prometheus histograms don't expose this externally - values are scraped
-    /// via the `/metrics` endpoint instead.
-    ///
-    /// Default implementation returns `(0.0, 0)` for backends that don't support reading.
-    fn get_histogram(&self) -> (f64, u64) {
-        (0.0, 0)
-    }
 }
 
 /// A metric with metadata (name and description).
@@ -198,11 +183,6 @@ impl<T: HistogramTrait> Metric<T> {
     /// Record an observation in the histogram.
     pub fn observe(&self, value: f64) {
         self.inner.observe(value);
-    }
-
-    /// Get the current histogram value.
-    pub fn get_histogram(&self) -> (f64, u64) {
-        self.inner.get_histogram()
     }
 }
 
