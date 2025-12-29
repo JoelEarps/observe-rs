@@ -2,8 +2,6 @@
 //!
 //! These tests verify that metrics work correctly across different backends.
 
-use observability_kit::core::metrics::{CounterTrait, GaugeTrait, Metric};
-
 #[cfg(feature = "prometheus")]
 mod prometheus_tests {
     use observability_kit::backends::prometheus::{counter, gauge};
@@ -132,6 +130,7 @@ mod mock_tests {
     #[test]
     fn test_mock_counter_clone_shares_state() {
         use observability_kit::backends::mock::MockCounter;
+        use observability_kit::core::metrics::CounterTrait;
 
         let counter1 = MockCounter::new();
         let counter2 = counter1.clone();
