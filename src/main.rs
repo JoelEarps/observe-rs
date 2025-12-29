@@ -15,15 +15,21 @@ async fn main() {
     {
         let requests = counter("http_requests_total", "Total HTTP requests received");
         let connections = gauge("active_connections", "Number of active connections");
-
+        let latency = histogram_for_latency("request_duration_seconds", "Request latency in seconds");
+        
         // Simulate some metric activity
         requests.inc();
         requests.inc_by(5);
         connections.set(42);
+        latency.observe(0.042); // 42ms request
+        latency.observe(0.156); // 156ms request
+        latency.observe(0.5);   // 500ms request
+        latency.observe(2.0);   // 2s request
 
         println!("📊 Metrics created:");
         println!("   - {} = {}", requests.name(), requests.get_counter());
         println!("   - {} = {}", connections.name(), connections.get_gauge());
+        println!("   - {} (4 observations recorded)", latency.name());
         println!();
     }
 

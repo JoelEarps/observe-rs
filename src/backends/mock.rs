@@ -146,6 +146,13 @@ impl HistogramTrait for MockHistogram {
     fn observe(&self, value: f64) {
         self.observations.lock().unwrap().push(value);
     }
+
+    fn get_histogram(&self) -> (f64, u64) {
+        let observations = self.observations.lock().unwrap();
+        let sum: f64 = observations.iter().sum();
+        let count = observations.len() as u64;
+        (sum, count)
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

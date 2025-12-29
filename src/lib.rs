@@ -79,7 +79,11 @@ pub mod prelude {
     pub use crate::core::metrics::{CounterTrait, GaugeTrait, HistogramTrait, Metric};
 
     #[cfg(feature = "prometheus")]
-    pub use crate::backends::prometheus::{counter, gauge, PrometheusCounter, PrometheusGauge};
+    pub use crate::backends::prometheus::{
+        counter, gauge, histogram, histogram_for_bytes, histogram_for_latency, histogram_with_buckets,
+        PrometheusCounter, PrometheusGauge, PrometheusHistogram,
+        DEFAULT_BUCKETS, DEFAULT_LATENCY_BUCKETS, DEFAULT_SIZE_BUCKETS,
+    };
 
     #[cfg(feature = "mock")]
     pub use crate::backends::mock::{
