@@ -1,45 +1,54 @@
-mod http_server;
-mod prometheus_metric_generator;
-use http_server::http_server::create_http_server;
-use prometheus_metric_generator::prometheus_metrics_handler::{
-    self, Metrics, PrometheusMetricHandler, RegistryState,
-};
-use tokio::task::JoinSet;
+//! Example: Running the observability kit as a standalone server.
+//!
+//! This demonstrates how to use the library in standalone mode,
+//! suitable for sidecar deployments or embedded metrics servers.
+
+use observability_kit::prelude::*;
 
 #[tokio::main]
 async fn main() {
-    // Pass in config via from environment?
-    // Issues: RW Lock, Event Streaming Architecture
-    // Schema for different metric servers - e.g. generalise or expand to service X.
-    println!("Hello, welcome to my library!");
+    println!("🔭 Observability Kit - Standalone Server Example");
+    println!("================================================\n");
 
-    /*
-    1. Create Metrics Structure
-    2. Create WebServer that is passed initial metrics
-    3. Access and change metrics - using an interface
-    */
+    // Create some example metrics
+    #[cfg(feature = "prometheus")]
+    {
+        let requests = counter("http_requests_total", "Total HTTP requests received");
+        let connections = gauge("active_connections", "Number of active connections");
 
-    // What is the SLA/ schema for generating and setting up metrics of your choice?
+        // Simulate some metric activity
+        requests.inc();
+        requests.inc_by(5);
+        connections.set(42);
 
-    // Pass in the metrics you wish to create, this triggers a generator and goes from there?
-    let prometheus_metrics_handler = PrometheusMetricHandler::new();
+        println!("📊 Metrics created:");
+        println!("   - {} = {}", requests.name(), requests.get_counter());
+        println!("   - {} = {}", connections.name(), connections.get_gauge());
+        println!();
+    }
 
-    // What is Joinset by default and what should it return
-    // This could be a function via an attribute? Discuss with IB
-    // spawn new thread and create custom error - maybe create a new thread for it to run on automatically as a function?
-    // Or leave thread management - option for threaded and none threaded management?
-    let mut application_task_set = JoinSet::new();
-    application_task_set.spawn({
-        create_http_server(
-            prometheus_metrics_handler.all_metrics,
-            prometheus_metrics_handler.registry_state,
-        )
-    });
+    // Start the standalone server
+    #[cfg(feature = "standalone")]
+    {
+        let server = StandaloneServer::builder()
+            .port(9090)
+            .host("127.0.0.1")
+            .build();
 
-    // Custom error for joinset failing
-    while let Some(task_return) = application_task_set.join_next().await {
-        task_return.unwrap_err();
+        println!("🚀 Starting server...");
+        println!("   Metrics:   http://127.0.0.1:9090/metrics");
+        println!("   Health:    http://127.0.0.1:9090/health");
+        println!("   Readiness: http://127.0.0.1:9090/ready");
+        println!();
+
+        if let Err(e) = server.run().await {
+            eprintln!("❌ Server error: {}", e);
+        }
+    }
+
+    #[cfg(not(feature = "standalone"))]
+    {
+        println!("ℹ️  Standalone feature not enabled.");
+        println!("   Run with: cargo run --features standalone");
     }
 }
-
-// Main functions can test successful termination and running - maybe use mockall here?
