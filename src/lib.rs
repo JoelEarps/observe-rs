@@ -80,8 +80,15 @@ pub mod prelude {
 
     #[cfg(feature = "prometheus")]
     pub use crate::backends::prometheus::{
+        // Basic metrics
         counter, gauge, histogram, histogram_for_bytes, histogram_for_latency, histogram_with_buckets,
+        // Labeled metrics
+        labeled_counter, labeled_gauge, labeled_histogram, labeled_histogram_for_bytes,
+        labeled_histogram_for_latency, EncodeLabelSet, Family, LabeledCounter, LabeledGauge,
+        LabeledHistogram,
+        // Types
         PrometheusBackend, PrometheusCounter, PrometheusGauge, PrometheusHistogram, PrometheusRegistry,
+        // Constants
         DEFAULT_BUCKETS, DEFAULT_LATENCY_BUCKETS, DEFAULT_SIZE_BUCKETS,
     };
 

@@ -1,11 +1,39 @@
 //! Prometheus backend implementation.
 //!
 //! This module implements the core metric traits for the `prometheus-client` crate.
+//!
+//! # Labeled Metrics
+//!
+//! For metrics with labels, use the `Family` type with a custom label struct:
+//!
+//! ```ignore
+//! use observability_kit::backends::prometheus::{Family, EncodeLabelSet, Histogram};
+//!
+//! #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+//! struct HttpLabels {
+//!     method: String,
+//!     status: u16,
+//! }
+//!
+//! let latency: Family<HttpLabels, Histogram> = Family::new_with_constructor(|| {
+//!     Histogram::new([0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0].into_iter())
+//! });
+//!
+//! // Observe a value with specific labels
+//! latency.get_or_create(&HttpLabels {
+//!     method: "GET".into(),
+//!     status: 200,
+//! }).observe(0.042);
+//! ```
 
 use crate::core::metrics::{CounterTrait, GaugeTrait, HistogramTrait, Metric};
 use crate::core::registry::{MetricBackend, ObservabilityRegistry};
 use prometheus_client::metrics::{counter::Counter, gauge::Gauge, histogram::Histogram};
 use prometheus_client::registry::Registry;
+
+// Re-export key types for labeled metrics
+pub use prometheus_client::encoding::EncodeLabelSet;
+pub use prometheus_client::metrics::family::Family;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CounterTrait implementation for prometheus-client Counter
@@ -250,6 +278,115 @@ pub fn histogram_for_bytes(
     histogram_with_buckets(name, description, DEFAULT_SIZE_BUCKETS.into_iter())
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Labeled Metric Families
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// A labeled histogram family type alias.
+///
+/// Use this with a custom label struct that derives `EncodeLabelSet`.
+///
+/// # Example
+/// ```ignore
+/// use observability_kit::backends::prometheus::{LabeledHistogram, EncodeLabelSet};
+///
+/// #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+/// struct HttpLabels {
+///     method: String,
+///     status: u16,
+/// }
+///
+/// let latency = labeled_histogram_for_latency::<HttpLabels>();
+/// latency.get_or_create(&HttpLabels { method: "GET".into(), status: 200 }).observe(0.042);
+/// ```
+pub type LabeledHistogram<L> = Family<L, Histogram>;
+
+/// A labeled counter family type alias.
+pub type LabeledCounter<L> = Family<L, Counter<u64>>;
+
+/// A labeled gauge family type alias.
+pub type LabeledGauge<L> = Family<L, Gauge<i64>>;
+
+/// Create a labeled histogram family with default latency buckets.
+///
+/// Uses the same buckets as [`histogram_for_latency`]:
+/// `[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]`
+///
+/// # Example
+/// ```ignore
+/// use observability_kit::backends::prometheus::{labeled_histogram_for_latency, EncodeLabelSet};
+///
+/// #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+/// struct HttpLabels {
+///     method: String,
+///     endpoint: String,
+/// }
+///
+/// let latency = labeled_histogram_for_latency::<HttpLabels>();
+///
+/// // Record latency for GET /api/users
+/// latency.get_or_create(&HttpLabels {
+///     method: "GET".into(),
+///     endpoint: "/api/users".into(),
+/// }).observe(0.042);
+/// ```
+pub fn labeled_histogram_for_latency<L>() -> LabeledHistogram<L>
+where
+    L: EncodeLabelSet + Clone + std::hash::Hash + Eq + std::fmt::Debug + Send + Sync + 'static,
+{
+    Family::new_with_constructor(create_latency_histogram)
+}
+
+fn create_latency_histogram() -> Histogram {
+    Histogram::new(DEFAULT_LATENCY_BUCKETS.into_iter())
+}
+
+/// Create a labeled histogram family with default byte size buckets.
+///
+/// Uses the same buckets as [`histogram_for_bytes`]:
+/// `[100, 1K, 10K, 100K, 1M, 10M, 100M, 1G, 10G, 100G]`
+pub fn labeled_histogram_for_bytes<L>() -> LabeledHistogram<L>
+where
+    L: EncodeLabelSet + Clone + std::hash::Hash + Eq + std::fmt::Debug + Send + Sync + 'static,
+{
+    Family::new_with_constructor(create_bytes_histogram)
+}
+
+fn create_bytes_histogram() -> Histogram {
+    Histogram::new(DEFAULT_SIZE_BUCKETS.into_iter())
+}
+
+/// Create a labeled histogram family with default general-purpose buckets.
+///
+/// Uses the same buckets as [`histogram`]:
+/// `[0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]`
+pub fn labeled_histogram<L>() -> LabeledHistogram<L>
+where
+    L: EncodeLabelSet + Clone + std::hash::Hash + Eq + std::fmt::Debug + Send + Sync + 'static,
+{
+    Family::new_with_constructor(create_default_histogram)
+}
+
+fn create_default_histogram() -> Histogram {
+    Histogram::new(DEFAULT_BUCKETS.into_iter())
+}
+
+/// Create a labeled counter family.
+pub fn labeled_counter<L>() -> LabeledCounter<L>
+where
+    L: EncodeLabelSet + Clone + std::hash::Hash + Eq + std::fmt::Debug + Send + Sync + 'static,
+{
+    Family::default()
+}
+
+/// Create a labeled gauge family.
+pub fn labeled_gauge<L>() -> LabeledGauge<L>
+where
+    L: EncodeLabelSet + Clone + std::hash::Hash + Eq + std::fmt::Debug + Send + Sync + 'static,
+{
+    Family::default()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -383,6 +520,99 @@ mod tests {
         
         // Verify content type
         assert!(output.content_type.contains("text/plain"));
+    }
+
+    #[test]
+    fn test_labeled_histogram_for_latency() {
+        use std::hash::Hash;
+        
+        #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+        struct HttpLabels {
+            method: String,
+            status: u16,
+        }
+
+        let latency: LabeledHistogram<HttpLabels> = labeled_histogram_for_latency();
+
+        // Record latency for different label combinations
+        latency.get_or_create(&HttpLabels { 
+            method: "GET".into(), 
+            status: 200 
+        }).observe(0.042);
+
+        latency.get_or_create(&HttpLabels { 
+            method: "POST".into(), 
+            status: 201 
+        }).observe(0.156);
+
+        latency.get_or_create(&HttpLabels { 
+            method: "GET".into(), 
+            status: 404 
+        }).observe(0.008);
+
+        // Record multiple observations for the same labels
+        latency.get_or_create(&HttpLabels { 
+            method: "GET".into(), 
+            status: 200 
+        }).observe(0.089);
+    }
+
+    #[test]
+    fn test_labeled_counter() {
+        #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+        struct RequestLabels {
+            method: String,
+            path: String,
+        }
+
+        let requests: LabeledCounter<RequestLabels> = labeled_counter();
+
+        requests.get_or_create(&RequestLabels {
+            method: "GET".into(),
+            path: "/api/users".into(),
+        }).inc();
+
+        requests.get_or_create(&RequestLabels {
+            method: "POST".into(),
+            path: "/api/users".into(),
+        }).inc_by(5);
+
+        // Verify counts
+        let get_count = requests.get_or_create(&RequestLabels {
+            method: "GET".into(),
+            path: "/api/users".into(),
+        }).get();
+        assert_eq!(get_count, 1);
+
+        let post_count = requests.get_or_create(&RequestLabels {
+            method: "POST".into(),
+            path: "/api/users".into(),
+        }).get();
+        assert_eq!(post_count, 5);
+    }
+
+    #[test]
+    fn test_labeled_gauge() {
+        #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+        struct ConnectionLabels {
+            pool: String,
+        }
+
+        let connections: LabeledGauge<ConnectionLabels> = labeled_gauge();
+
+        connections.get_or_create(&ConnectionLabels {
+            pool: "primary".into(),
+        }).set(10);
+
+        connections.get_or_create(&ConnectionLabels {
+            pool: "replica".into(),
+        }).set(5);
+
+        // Verify values
+        let primary = connections.get_or_create(&ConnectionLabels {
+            pool: "primary".into(),
+        }).get();
+        assert_eq!(primary, 10);
     }
 }
 
