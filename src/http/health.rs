@@ -92,4 +92,3 @@ mod tests {
         assert_eq!(not_ready.status_code(), 503);
     }
 }
-

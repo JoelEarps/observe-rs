@@ -142,4 +142,3 @@ mod mock_tests {
         assert_eq!(counter1.get(), 6);
     }
 }
-

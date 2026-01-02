@@ -1,0 +1,9 @@
+metrics:
+  - name: http_requests_total
+    description: Total HTTP requests
+    type: counter
+    value: 0
+  - name: active_connections
+    description: Number of active connections
+    type: gauge
+    value: 0

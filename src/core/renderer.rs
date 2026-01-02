@@ -4,7 +4,7 @@
 pub trait MetricsRenderer {
     /// Error type for rendering failures.
     type Error;
-    
+
     /// Render metrics in the appropriate format (Prometheus text, JSON, etc.)
     fn render(&self) -> Result<RenderedMetrics, Self::Error>;
 }
@@ -28,17 +28,17 @@ impl RenderedMetrics {
             body,
         }
     }
-    
+
     /// Try to interpret the body as a UTF-8 string.
     pub fn as_str(&self) -> Result<&str, std::str::Utf8Error> {
         std::str::from_utf8(&self.body)
     }
-    
+
     /// Get the body as bytes.
     pub fn as_bytes(&self) -> &[u8] {
         &self.body
     }
-    
+
     /// Consume and return the body.
     pub fn into_bytes(self) -> Vec<u8> {
         self.body
@@ -52,11 +52,11 @@ impl RenderedMetrics {
 #[cfg(feature = "prometheus")]
 impl MetricsRenderer for prometheus_client::registry::Registry {
     type Error = std::fmt::Error;
-    
+
     fn render(&self) -> Result<RenderedMetrics, Self::Error> {
         let mut buffer = String::new();
         prometheus_client::encoding::text::encode(&mut buffer, self)?;
-        
+
         Ok(RenderedMetrics::new(
             "text/plain; version=0.0.4; charset=utf-8",
             buffer.into_bytes(),

@@ -15,4 +15,3 @@ pub use self::prometheus::*;
 
 #[cfg(feature = "mock")]
 pub use self::mock::*;
-

@@ -22,10 +22,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         {
             let registry_handle = server.registry();
             let mut registry = registry_handle.write().await;
-            
-            let requests = registry.counter("http_requests_total", "Total HTTP requests received")?;
-            let connections = registry.gauge("active_connections", "Number of active connections")?;
-            let latency = registry.histogram("request_duration_seconds", "Request latency in seconds")?;
+
+            let requests =
+                registry.counter("http_requests_total", "Total HTTP requests received")?;
+            let connections =
+                registry.gauge("active_connections", "Number of active connections")?;
+            let latency =
+                registry.histogram("request_duration_seconds", "Request latency in seconds")?;
 
             // Simulate some metric activity
             requests.inc();
@@ -33,8 +36,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             connections.set(42);
             latency.observe(0.042); // 42ms request
             latency.observe(0.156); // 156ms request
-            latency.observe(0.5);   // 500ms request
-            latency.observe(2.0);   // 2s request
+            latency.observe(0.5); // 500ms request
+            latency.observe(2.0); // 2s request
 
             println!("📊 Metrics created:");
             println!("   - {} = {}", requests.name(), requests.get_counter());

@@ -10,4 +10,3 @@ pub mod renderer;
 pub use metrics::{CounterTrait, GaugeTrait, HistogramTrait, Metric};
 pub use registry::{MetricBackend, ObservabilityRegistry};
 pub use renderer::{MetricsRenderer, RenderedMetrics};
-

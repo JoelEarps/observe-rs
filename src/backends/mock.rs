@@ -227,4 +227,3 @@ mod tests {
         assert_eq!(cloned.get(), 1); // Both see the same value
     }
 }
-

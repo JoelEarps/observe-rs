@@ -247,14 +247,12 @@ pub enum ServerError {
 // HTTP Handlers
 // ═══════════════════════════════════════════════════════════════════════════
 
-async fn metrics_handler<B: MetricBackend>(
-    State(state): State<AppState<B>>,
-) -> impl IntoResponse
+async fn metrics_handler<B: MetricBackend>(State(state): State<AppState<B>>) -> impl IntoResponse
 where
     B::Registry: MetricsRenderer<Error = std::fmt::Error>,
 {
     let registry = state.registry.read().await;
-    
+
     match registry.render() {
         Ok(rendered) => {
             let content_type = rendered.content_type.clone();

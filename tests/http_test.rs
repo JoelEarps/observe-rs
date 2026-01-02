@@ -94,9 +94,7 @@ mod http_tests {
             .build();
 
         // Spawn server in background
-        let server_handle = tokio::spawn(async move {
-            server.run().await
-        });
+        let server_handle = tokio::spawn(async move { server.run().await });
 
         // Give the server time to start
         tokio::time::sleep(Duration::from_millis(100)).await;
@@ -107,7 +105,9 @@ mod http_tests {
         // Test health endpoint
         let health_resp = timeout(
             Duration::from_secs(5),
-            client.get(format!("http://127.0.0.1:{}/health", port)).send(),
+            client
+                .get(format!("http://127.0.0.1:{}/health", port))
+                .send(),
         )
         .await
         .expect("Health request timed out")
@@ -119,7 +119,9 @@ mod http_tests {
         // Test ready endpoint
         let ready_resp = timeout(
             Duration::from_secs(5),
-            client.get(format!("http://127.0.0.1:{}/ready", port)).send(),
+            client
+                .get(format!("http://127.0.0.1:{}/ready", port))
+                .send(),
         )
         .await
         .expect("Ready request timed out")
@@ -131,7 +133,9 @@ mod http_tests {
         // Test metrics endpoint
         let metrics_resp = timeout(
             Duration::from_secs(5),
-            client.get(format!("http://127.0.0.1:{}/metrics", port)).send(),
+            client
+                .get(format!("http://127.0.0.1:{}/metrics", port))
+                .send(),
         )
         .await
         .expect("Metrics request timed out")

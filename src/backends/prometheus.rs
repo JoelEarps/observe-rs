@@ -116,11 +116,11 @@ impl MetricBackend for PrometheusBackend {
     type Gauge = Gauge<i64>;
     type Histogram = Histogram;
     type Error = PrometheusError;
-    
+
     fn create_registry() -> Self::Registry {
         Registry::default()
     }
-    
+
     fn register_counter(
         registry: &mut Self::Registry,
         name: &str,
@@ -130,7 +130,7 @@ impl MetricBackend for PrometheusBackend {
         registry.register(name, help, counter.clone());
         Ok(counter)
     }
-    
+
     fn register_gauge(
         registry: &mut Self::Registry,
         name: &str,
@@ -140,7 +140,7 @@ impl MetricBackend for PrometheusBackend {
         registry.register(name, help, gauge.clone());
         Ok(gauge)
     }
-    
+
     fn register_histogram(
         registry: &mut Self::Registry,
         name: &str,
@@ -214,8 +214,16 @@ pub const DEFAULT_LATENCY_BUCKETS: [f64; 11] = [
 
 /// Default histogram buckets for size measurements (in bytes).
 pub const DEFAULT_SIZE_BUCKETS: [f64; 10] = [
-    100.0, 1_000.0, 10_000.0, 100_000.0, 1_000_000.0, 
-    10_000_000.0, 100_000_000.0, 1_000_000_000.0, 10_000_000_000.0, 100_000_000_000.0,
+    100.0,
+    1_000.0,
+    10_000.0,
+    100_000.0,
+    1_000_000.0,
+    10_000_000.0,
+    100_000_000.0,
+    1_000_000_000.0,
+    10_000_000_000.0,
+    100_000_000_000.0,
 ];
 
 /// Create a new Prometheus histogram with default general-purpose buckets.
@@ -246,7 +254,10 @@ pub fn histogram(name: impl Into<String>, description: impl Into<String>) -> Pro
 /// let latency = histogram_for_latency("request_duration_seconds", "Request latency in seconds");
 /// latency.observe(0.042); // 42ms request
 /// ```
-pub fn histogram_for_latency(name: impl Into<String>, description: impl Into<String>) -> PrometheusHistogram {
+pub fn histogram_for_latency(
+    name: impl Into<String>,
+    description: impl Into<String>,
+) -> PrometheusHistogram {
     histogram_with_buckets(name, description, DEFAULT_LATENCY_BUCKETS.into_iter())
 }
 
@@ -433,13 +444,14 @@ mod tests {
 
     #[test]
     fn test_prometheus_histogram_for_latency() {
-        let latency = histogram_for_latency("request_duration_seconds", "Request latency in seconds");
+        let latency =
+            histogram_for_latency("request_duration_seconds", "Request latency in seconds");
 
         // Observe some values
         latency.observe(0.001); // 1ms
         latency.observe(0.042); // 42ms
-        latency.observe(0.5);   // 500ms
-        latency.observe(2.0);   // 2s
+        latency.observe(0.5); // 500ms
+        latency.observe(2.0); // 2s
 
         // Verify metadata
         assert_eq!(latency.name(), "request_duration_seconds");
@@ -464,13 +476,11 @@ mod tests {
 
     #[test]
     fn test_prometheus_histogram_for_bytes() {
-        let response_size = histogram_for_bytes(
-            "http_response_size_bytes",
-            "HTTP response size in bytes",
-        );
+        let response_size =
+            histogram_for_bytes("http_response_size_bytes", "HTTP response size in bytes");
 
-        response_size.observe(512.0);      // 512 bytes
-        response_size.observe(15_000.0);   // 15 KB
+        response_size.observe(512.0); // 512 bytes
+        response_size.observe(15_000.0); // 15 KB
         response_size.observe(5_000_000.0); // 5 MB
 
         assert_eq!(response_size.name(), "http_response_size_bytes");
@@ -481,9 +491,15 @@ mod tests {
         let mut registry = PrometheusRegistry::new();
 
         // Create metrics via the registry
-        let requests = registry.counter("http_requests_total", "Total HTTP requests").unwrap();
-        let connections = registry.gauge("active_connections", "Active connections").unwrap();
-        let latency = registry.histogram("request_duration_seconds", "Request latency").unwrap();
+        let requests = registry
+            .counter("http_requests_total", "Total HTTP requests")
+            .unwrap();
+        let connections = registry
+            .gauge("active_connections", "Active connections")
+            .unwrap();
+        let latency = registry
+            .histogram("request_duration_seconds", "Request latency")
+            .unwrap();
 
         // Use the metrics
         requests.inc();
@@ -501,7 +517,9 @@ mod tests {
     fn test_prometheus_registry_renders_metrics() {
         let mut registry = PrometheusRegistry::new();
 
-        let requests = registry.counter("test_requests_total", "Test counter").unwrap();
+        let requests = registry
+            .counter("test_requests_total", "Test counter")
+            .unwrap();
         requests.inc();
         requests.inc_by(10);
 
@@ -517,7 +535,7 @@ mod tests {
         assert!(text.contains("11")); // 1 + 10
         assert!(text.contains("test_gauge"));
         assert!(text.contains("42"));
-        
+
         // Verify content type
         assert!(output.content_type.contains("text/plain"));
     }
@@ -525,7 +543,7 @@ mod tests {
     #[test]
     fn test_labeled_histogram_for_latency() {
         use std::hash::Hash;
-        
+
         #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
         struct HttpLabels {
             method: String,
@@ -535,26 +553,34 @@ mod tests {
         let latency: LabeledHistogram<HttpLabels> = labeled_histogram_for_latency();
 
         // Record latency for different label combinations
-        latency.get_or_create(&HttpLabels { 
-            method: "GET".into(), 
-            status: 200 
-        }).observe(0.042);
+        latency
+            .get_or_create(&HttpLabels {
+                method: "GET".into(),
+                status: 200,
+            })
+            .observe(0.042);
 
-        latency.get_or_create(&HttpLabels { 
-            method: "POST".into(), 
-            status: 201 
-        }).observe(0.156);
+        latency
+            .get_or_create(&HttpLabels {
+                method: "POST".into(),
+                status: 201,
+            })
+            .observe(0.156);
 
-        latency.get_or_create(&HttpLabels { 
-            method: "GET".into(), 
-            status: 404 
-        }).observe(0.008);
+        latency
+            .get_or_create(&HttpLabels {
+                method: "GET".into(),
+                status: 404,
+            })
+            .observe(0.008);
 
         // Record multiple observations for the same labels
-        latency.get_or_create(&HttpLabels { 
-            method: "GET".into(), 
-            status: 200 
-        }).observe(0.089);
+        latency
+            .get_or_create(&HttpLabels {
+                method: "GET".into(),
+                status: 200,
+            })
+            .observe(0.089);
     }
 
     #[test]
@@ -567,27 +593,35 @@ mod tests {
 
         let requests: LabeledCounter<RequestLabels> = labeled_counter();
 
-        requests.get_or_create(&RequestLabels {
-            method: "GET".into(),
-            path: "/api/users".into(),
-        }).inc();
+        requests
+            .get_or_create(&RequestLabels {
+                method: "GET".into(),
+                path: "/api/users".into(),
+            })
+            .inc();
 
-        requests.get_or_create(&RequestLabels {
-            method: "POST".into(),
-            path: "/api/users".into(),
-        }).inc_by(5);
+        requests
+            .get_or_create(&RequestLabels {
+                method: "POST".into(),
+                path: "/api/users".into(),
+            })
+            .inc_by(5);
 
         // Verify counts
-        let get_count = requests.get_or_create(&RequestLabels {
-            method: "GET".into(),
-            path: "/api/users".into(),
-        }).get();
+        let get_count = requests
+            .get_or_create(&RequestLabels {
+                method: "GET".into(),
+                path: "/api/users".into(),
+            })
+            .get();
         assert_eq!(get_count, 1);
 
-        let post_count = requests.get_or_create(&RequestLabels {
-            method: "POST".into(),
-            path: "/api/users".into(),
-        }).get();
+        let post_count = requests
+            .get_or_create(&RequestLabels {
+                method: "POST".into(),
+                path: "/api/users".into(),
+            })
+            .get();
         assert_eq!(post_count, 5);
     }
 
@@ -600,19 +634,24 @@ mod tests {
 
         let connections: LabeledGauge<ConnectionLabels> = labeled_gauge();
 
-        connections.get_or_create(&ConnectionLabels {
-            pool: "primary".into(),
-        }).set(10);
+        connections
+            .get_or_create(&ConnectionLabels {
+                pool: "primary".into(),
+            })
+            .set(10);
 
-        connections.get_or_create(&ConnectionLabels {
-            pool: "replica".into(),
-        }).set(5);
+        connections
+            .get_or_create(&ConnectionLabels {
+                pool: "replica".into(),
+            })
+            .set(5);
 
         // Verify values
-        let primary = connections.get_or_create(&ConnectionLabels {
-            pool: "primary".into(),
-        }).get();
+        let primary = connections
+            .get_or_create(&ConnectionLabels {
+                pool: "primary".into(),
+            })
+            .get();
         assert_eq!(primary, 10);
     }
 }
-

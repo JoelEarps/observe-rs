@@ -19,7 +19,8 @@ pub mod helpers {
     pub fn assert_counter_value<T: CounterTrait>(metric: &Metric<T>, expected: u64) {
         let actual = metric.get_counter();
         assert_eq!(
-            actual, expected,
+            actual,
+            expected,
             "Counter '{}' expected {} but was {}",
             metric.name(),
             expected,
@@ -38,7 +39,8 @@ pub mod helpers {
     pub fn assert_gauge_value<T: GaugeTrait>(metric: &Metric<T>, expected: i64) {
         let actual = metric.get_gauge();
         assert_eq!(
-            actual, expected,
+            actual,
+            expected,
             "Gauge '{}' expected {} but was {}",
             metric.name(),
             expected,
@@ -50,7 +52,8 @@ pub mod helpers {
     pub fn assert_histogram_count(metric: &Metric<MockHistogram>, expected_count: usize) {
         let actual = metric.inner().count();
         assert_eq!(
-            actual, expected_count,
+            actual,
+            expected_count,
             "Histogram '{}' expected {} observations but had {}",
             metric.name(),
             expected_count,
@@ -59,7 +62,11 @@ pub mod helpers {
     }
 
     /// Assert that a histogram sum is approximately equal to expected.
-    pub fn assert_histogram_sum_approx(metric: &Metric<MockHistogram>, expected: f64, epsilon: f64) {
+    pub fn assert_histogram_sum_approx(
+        metric: &Metric<MockHistogram>,
+        expected: f64,
+        epsilon: f64,
+    ) {
         let actual = metric.inner().sum();
         assert!(
             (actual - expected).abs() < epsilon,
@@ -82,7 +89,8 @@ pub mod helpers {
         let current = metric.get_counter();
         let expected = previous + increment;
         assert_eq!(
-            current, expected,
+            current,
+            expected,
             "Counter '{}' expected to increment from {} by {} to {}, but was {}",
             metric.name(),
             previous,
@@ -139,4 +147,3 @@ mod tests {
         assert_eq!(v2, 10);
     }
 }
-

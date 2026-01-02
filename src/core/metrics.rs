@@ -196,8 +196,7 @@ mod tests {
 
     impl CounterTrait for TestCounter {
         fn inc(&self) {
-            self.0
-                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            self.0.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         }
 
         fn inc_by(&self, value: u64) {
@@ -229,4 +228,3 @@ mod tests {
         assert_eq!(counter.get_counter(), 11);
     }
 }
-
