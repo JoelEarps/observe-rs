@@ -1,0 +1,24 @@
+name: CD
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo for now
+        run: echo "Release please"
+
+    # Cargo release please
+    # ChangeLog
+    # Release Notes
+    # Publish new version to crates.io
+    # Publish new version to GitHub Releases
+    # Update README.md with new version and binary size comparison
+    # Update Cargo.toml with new version
+    # Update Cargo.lock with new version
