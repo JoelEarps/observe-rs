@@ -147,7 +147,7 @@ impl MetricBackend for PrometheusBackend {
         help: &str,
         buckets: Vec<f64>,
     ) -> Result<Self::Histogram, Self::Error> {
-        let histogram = Histogram::new(buckets.into_iter());
+        let histogram = Histogram::new(buckets);
         registry.register(name, help, histogram.clone());
         Ok(histogram)
     }
@@ -349,7 +349,7 @@ where
 }
 
 fn create_latency_histogram() -> Histogram {
-    Histogram::new(DEFAULT_LATENCY_BUCKETS.into_iter())
+    Histogram::new(DEFAULT_LATENCY_BUCKETS)
 }
 
 /// Create a labeled histogram family with default byte size buckets.
@@ -364,7 +364,7 @@ where
 }
 
 fn create_bytes_histogram() -> Histogram {
-    Histogram::new(DEFAULT_SIZE_BUCKETS.into_iter())
+    Histogram::new(DEFAULT_SIZE_BUCKETS)
 }
 
 /// Create a labeled histogram family with default general-purpose buckets.
@@ -379,7 +379,7 @@ where
 }
 
 fn create_default_histogram() -> Histogram {
-    Histogram::new(DEFAULT_BUCKETS.into_iter())
+    Histogram::new(DEFAULT_BUCKETS)
 }
 
 /// Create a labeled counter family.
