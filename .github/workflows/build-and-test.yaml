@@ -56,6 +56,9 @@ jobs:
       - name: Build (release mode)
         run: cargo build --verbose --release
 
+      - name: Build current example
+        run: cargo build --example standalone-prometheus --features "prometheus standalone"
+
   # Test job - runs all tests
   test:
     name: Test

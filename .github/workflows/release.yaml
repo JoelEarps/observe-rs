@@ -1,24 +1,38 @@
-name: CD
+name: Release
 
 on:
   push:
-    tags:
-    - 'v*'
+    branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Echo for now
-        run: echo "Release please"
+  # Build and test first (must pass before release)
+  build-and-test:
+    name: Build and Test
+    uses: ./.github/workflows/build-and-test.yaml
 
-    # Cargo release please
-    # ChangeLog
-    # Release Notes
-    # Publish new version to crates.io
-    # Publish new version to GitHub Releases
-    # Update README.md with new version and binary size comparison
-    # Update Cargo.toml with new version
-    # Update Cargo.lock with new version
+  # Release using release-plz
+  release:
+    name: Release with release-plz
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run release-plz
+        uses: release-plz/action@v0.5
+        with:
+          command: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

@@ -1,0 +1,19 @@
+# release-plz configuration
+# See: https://release-plz.dev/docs/configuration/reference
+
+[changelog]
+# Generate changelog using git-cliff
+enable = true
+
+# Package configuration
+[packages.observability-kit]
+# Auto-publish to crates.io (set to false if you want manual review)
+publish = true
+
+# Git configuration
+[git]
+# Use conventional commits for version bumping
+conventional_commits = true
+
+# Branch name for release PRs
+release_branch = "release-plz"
