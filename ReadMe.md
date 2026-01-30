@@ -178,6 +178,24 @@ Use **`load_file(path, extra_base)`** to validate and then deserialize in one ca
 
 *Note:* Do not load config from untrusted paths; no resource limits (file size, metric count) are enforced.
 
+## Metric names and duplicates (need to know)
+
+### Metric names (Prometheus backend)
+
+When using the Prometheus backend, metric names are **validated at registration**. Names must follow [Prometheus rules](https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels):
+
+- **Pattern:** `[a-zA-Z_][a-zA-Z0-9_]*` — start with a letter or underscore; after that, only letters, digits, and underscores.
+- **Non-empty** — empty names are rejected.
+- **Not allowed:** colons (`:`), hyphens (`-`), dots (`.`), or any other characters. Digits are allowed only after the first character.
+
+Invalid names (e.g. `my-metric`, `my.metric`, `name_with:colon`, `123bad`) cause registration to return `PrometheusError::InvalidNamingConvention`. Use valid names such as `http_requests_total`, `request_duration_seconds`, `_private_metric`.
+
+### Duplicate names and number of metrics
+
+- **Same type, same name** — Registering two metrics of the **same type** (e.g. two counters) with the **same name** is not allowed. It returns `DuplicateMetricName` (deserialised config) or a backend error. Each metric name must be unique within its type.
+- **Same name, different types** — One counter, one gauge, and one histogram can all share the same name (e.g. `metric`). That is allowed.
+- **No hard limit** — The library does not enforce a maximum number of metrics. Very large registries may affect memory and scrape size; keep cardinality in mind for Prometheus.
+
 ## Histogram Presets
 
 Pre-configured bucket sets for common use cases:
