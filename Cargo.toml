@@ -1,11 +1,11 @@
 [package]
-name = "observability-kit"
+name = "observe-rs"
 authors = ["Joel Earps"]
 version = "0.1.0"
 edition = "2021"
 description = "A flexible, multi-backend observability library for Rust"
 license = "MIT"
-repository = "https://github.com/yourusername/observability-kit"
+repository = "https://github.com/JoelEarps/observe-rs"
 keywords = ["prometheus", "metrics", "observability", "opentelemetry", "monitoring"]
 categories = ["development-tools::profiling", "web-programming"]
 

@@ -27,7 +27,7 @@ git_release_enable = true
 # Package overrides ([[package]] = array of tables; name is required)
 # -----------------------------------------------------------------------------
 [[package]]
-name = "observability-kit"
+name = "observe-rs"
 
 # Where the changelog is written (relative to repo root). Created on first release if missing.
 changelog_path = "docs/CHANGELOG.md"

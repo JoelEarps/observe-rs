@@ -7,7 +7,7 @@
 //! For metrics with labels, use the `Family` type with a custom label struct:
 //!
 //! ```ignore
-//! use observability_kit::backends::prometheus::{Family, EncodeLabelSet, Histogram};
+//! use observe_rs::backends::prometheus::{Family, EncodeLabelSet, Histogram};
 //!
 //! #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 //! struct HttpLabels {
@@ -241,7 +241,7 @@ impl MetricBackend for PrometheusBackend {
 ///
 /// # Example
 /// ```ignore
-/// use observability_kit::backends::prometheus::PrometheusRegistry;
+/// use observe_rs::backends::prometheus::PrometheusRegistry;
 ///
 /// let mut registry = PrometheusRegistry::new();
 ///
@@ -377,7 +377,7 @@ pub fn histogram_for_bytes(
 ///
 /// # Example
 /// ```ignore
-/// use observability_kit::backends::prometheus::{LabeledHistogram, EncodeLabelSet};
+/// use observe_rs::backends::prometheus::{LabeledHistogram, EncodeLabelSet};
 ///
 /// #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 /// struct HttpLabels {
@@ -403,7 +403,7 @@ pub type LabeledGauge<L> = Family<L, Gauge<i64>>;
 ///
 /// # Example
 /// ```ignore
-/// use observability_kit::backends::prometheus::{labeled_histogram_for_latency, EncodeLabelSet};
+/// use observe_rs::backends::prometheus::{labeled_histogram_for_latency, EncodeLabelSet};
 ///
 /// #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 /// struct HttpLabels {

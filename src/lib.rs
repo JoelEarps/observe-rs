@@ -14,7 +14,7 @@
 //! ### Standalone Server (Sidecar/Embedded)
 //!
 //! ```ignore
-//! use observability_kit::http::StandaloneServer;
+//! use observe_rs::http::StandaloneServer;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -29,7 +29,7 @@
 //! ### Creating Metrics
 //!
 //! ```ignore
-//! use observability_kit::backends::prometheus::{counter, gauge};
+//! use observe_rs::backends::prometheus::{counter, gauge};
 //!
 //! let requests = counter("http_requests_total", "Total HTTP requests");
 //! let connections = gauge("active_connections", "Number of active connections");
@@ -41,7 +41,7 @@
 //! ### Testing with Mock Backend
 //!
 //! ```ignore
-//! use observability_kit::backends::mock::{test_counter, test_gauge};
+//! use observe_rs::backends::mock::{test_counter, test_gauge};
 //!
 //! #[test]
 //! fn test_my_function() {

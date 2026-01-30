@@ -1,4 +1,4 @@
-//! Example: Running the observability kit as a standalone server.
+//! Example: Running observe-rs as a standalone server.
 //!
 //! This demonstrates how to use the library in standalone mode,
 //! suitable for sidecar deployments or embedded metrics servers.
@@ -8,7 +8,7 @@
 //! cargo run --example standalone-prometheus --features "prometheus standalone"
 //! ```
 
-use observability_kit::prelude::*;
+use observe_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
