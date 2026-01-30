@@ -1,8 +1,10 @@
 # release-plz configuration
 # See: https://release-plz.dev/docs/configuration/reference
 #
-# Versioning: Conventional commits → SemVer (feat: = minor, fix: = patch, BREAKING CHANGE = major).
-# Tags: v1.0.0 style. Changelog: CHANGELOG.md at repo root. You must commit before release (no dirty working tree).
+# Only valid top-level sections: [workspace], [changelog], [[package]].
+# Use [[package]] with name = "crate-name" (array of tables), NOT [packages.crate-name].
+#
+# Versioning: Conventional commits → SemVer. Tags: v1.0.0. Changelog: CHANGELOG.md. Commit before release.
 
 # -----------------------------------------------------------------------------
 # [workspace] — defaults for all packages
@@ -21,13 +23,14 @@ git_tag_name = "v{{ version }}"
 # Git release: create a GitHub/Gitea release for the tag.
 git_release_enable = true
 
+# -----------------------------------------------------------------------------
+# Package overrides ([[package]] = array of tables; name is required)
+# -----------------------------------------------------------------------------
+[[package]]
+name = "observability-kit"
+
 # Where the changelog is written (relative to repo root). Created on first release if missing.
 changelog_path = "docs/CHANGELOG.md"
-
-# -----------------------------------------------------------------------------
-# Package overrides
-# -----------------------------------------------------------------------------
-[package]
 
 # Publish to crates.io (set to false for manual review).
 publish = true
