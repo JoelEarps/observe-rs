@@ -144,8 +144,7 @@ fn validate_prometheus_metric_name(name: &str) -> Result<(), PrometheusError> {
         if !is_valid_subsequent_char(c) {
             return Err(PrometheusError::InvalidNamingConvention(format!(
                 "metric name may only contain [a-zA-Z0-9_], got invalid char {:?} in {:?}",
-                c,
-                name
+                c, name
             )));
         }
     }
@@ -897,6 +896,10 @@ mod tests {
     fn validation_histogram_buckets_valid_accepted() {
         let mut registry = PrometheusRegistry::new();
         let result = registry.histogram_with_buckets("latency", "help", vec![0.1, 0.5, 1.0]);
-        assert!(result.is_ok(), "valid buckets should be accepted: {:?}", result);
+        assert!(
+            result.is_ok(),
+            "valid buckets should be accepted: {:?}",
+            result
+        );
     }
 }
