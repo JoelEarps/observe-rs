@@ -27,7 +27,7 @@ changelog_path = "docs/CHANGELOG.md"
 # -----------------------------------------------------------------------------
 # Package overrides
 # -----------------------------------------------------------------------------
-[packages.observability-kit]
+[package]
 
 # Publish to crates.io (set to false for manual review).
 publish = true
