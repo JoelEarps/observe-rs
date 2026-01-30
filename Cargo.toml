@@ -9,6 +9,8 @@ repository = "https://github.com/yourusername/observability-kit"
 keywords = ["prometheus", "metrics", "observability", "opentelemetry", "monitoring"]
 categories = ["development-tools::profiling", "web-programming"]
 
+# Features are additive: users can use default-features = false and pick only what they need.
+# CI and publish verify all feature combinations (including "full").
 [features]
 default = ["prometheus", "standalone"]
 

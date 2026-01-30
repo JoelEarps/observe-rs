@@ -218,6 +218,24 @@ Pre-configured bucket sets for common use cases:
 | `yaml-config` | YAML configuration support | |
 | `full` | All features | |
 
+### Pick exactly what you need
+
+The crate is fully configurable: use `default-features = false` and list only the features you want. Any combination is supported and tested at publish time.
+
+```toml
+# Minimal: Prometheus only (smallest footprint)
+observability-kit = { version = "0.1", default-features = false, features = ["prometheus"] }
+
+# Default: Prometheus + standalone server
+observability-kit = { version = "0.1" }
+
+# Custom: e.g. Prometheus + JSON config, no server
+observability-kit = { version = "0.1", default-features = false, features = ["prometheus", "json-config"] }
+
+# Everything: all backends, config formats, and mock
+observability-kit = { version = "0.1", features = ["full"] }
+```
+
 ## Build Size Comparison
 
 | Feature Combination | Description | Binary Size | Size (KB) | Relative to Minimal |
