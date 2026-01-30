@@ -1,4 +1,4 @@
-# Observability Kit
+# observe-rs
 
 A flexible, multi-backend observability library for Rust applications.
 
