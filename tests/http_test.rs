@@ -21,7 +21,7 @@ mod http_tests {
     #[cfg(feature = "prometheus")]
     #[test]
     fn test_server_builder_customization() {
-        use observe_rs::backends::prometheus::PrometheusBackend;
+        use observe_rs::backends::prometheus::prometheus_backend::PrometheusBackend;
         use observe_rs::http::standalone::StandaloneServer;
 
         let server = StandaloneServer::<PrometheusBackend>::builder()
@@ -77,7 +77,7 @@ mod http_tests {
     #[tokio::test]
     #[ignore = "Requires network access - run manually with --ignored flag"]
     async fn test_server_endpoints_integration() {
-        use observe_rs::backends::prometheus::PrometheusBackend;
+        use observe_rs::backends::prometheus::prometheus_backend::PrometheusBackend;
         use observe_rs::http::standalone::StandaloneServer;
         use std::net::TcpListener;
         use std::time::Duration;
