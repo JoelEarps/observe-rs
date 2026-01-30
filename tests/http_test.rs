@@ -4,8 +4,8 @@
 
 #[cfg(feature = "standalone")]
 mod http_tests {
-    use observability_kit::http::health::{HealthStatus, ReadinessStatus};
-    use observability_kit::http::standalone::ServerConfig;
+    use observe_rs::http::health::{HealthStatus, ReadinessStatus};
+    use observe_rs::http::standalone::ServerConfig;
 
     #[test]
     fn test_server_config_defaults() {
@@ -21,8 +21,8 @@ mod http_tests {
     #[cfg(feature = "prometheus")]
     #[test]
     fn test_server_builder_customization() {
-        use observability_kit::backends::prometheus::prometheus_backend::PrometheusBackend;
-        use observability_kit::http::standalone::StandaloneServer;
+        use observe_rs::backends::prometheus::prometheus_backend::PrometheusBackend;
+        use observe_rs::http::standalone::StandaloneServer;
 
         let server = StandaloneServer::<PrometheusBackend>::builder()
             .port(3000)
@@ -77,8 +77,8 @@ mod http_tests {
     #[tokio::test]
     #[ignore = "Requires network access - run manually with --ignored flag"]
     async fn test_server_endpoints_integration() {
-        use observability_kit::backends::prometheus::prometheus_backend::PrometheusBackend;
-        use observability_kit::http::standalone::StandaloneServer;
+        use observe_rs::backends::prometheus::prometheus_backend::PrometheusBackend;
+        use observe_rs::http::standalone::StandaloneServer;
         use std::net::TcpListener;
         use std::time::Duration;
         use tokio::time::timeout;

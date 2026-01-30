@@ -2,8 +2,8 @@
 
 A flexible, multi-backend observability library for Rust applications.
 
-[![Crates.io](https://img.shields.io/crates/v/observability-kit.svg)](https://crates.io/crates/observability-kit)
-[![Documentation](https://docs.rs/observability-kit/badge.svg)](https://docs.rs/observability-kit)
+[![Crates.io](https://img.shields.io/crates/v/observe-rs.svg)](https://crates.io/crates/observe-rs)
+[![Documentation](https://docs.rs/observe-rs/badge.svg)](https://docs.rs/observe-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -20,7 +20,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-observability-kit = "0.1"
+observe-rs = "0.1"
 ```
 
 ### Standalone Server (Sidecar/Embedded)
@@ -28,7 +28,7 @@ observability-kit = "0.1"
 Perfect for sidecar deployments or embedded metrics servers:
 
 ```rust
-use observability_kit::prelude::*;
+use observe_rs::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 For simple metric creation without the HTTP server:
 
 ```rust
-use observability_kit::prelude::*;
+use observe_rs::prelude::*;
 
 // Counters - monotonically increasing values
 let requests = counter("http_requests_total", "Total HTTP requests");
@@ -89,7 +89,7 @@ latency.observe(0.156);  // 156ms
 For dimensional metrics with labels:
 
 ```rust
-use observability_kit::prelude::*;
+use observe_rs::prelude::*;
 
 // Define your label structure
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
@@ -129,7 +129,7 @@ requests.get_or_create(&HttpLabels {
 The mock backend provides easy testing without a real metrics system:
 
 ```rust
-use observability_kit::prelude::*;
+use observe_rs::prelude::*;
 
 #[cfg(test)]
 mod tests {
@@ -218,6 +218,24 @@ Pre-configured bucket sets for common use cases:
 | `yaml-config` | YAML configuration support | |
 | `full` | All features | |
 
+### Pick exactly what you need
+
+The crate is fully configurable: use `default-features = false` and list only the features you want. Any combination is supported and tested at publish time.
+
+```toml
+# Minimal: Prometheus only (smallest footprint)
+observe-rs = { version = "0.1", default-features = false, features = ["prometheus"] }
+
+# Default: Prometheus + standalone server
+observe-rs = { version = "0.1" }
+
+# Custom: e.g. Prometheus + JSON config, no server
+observe-rs = { version = "0.1", default-features = false, features = ["prometheus", "json-config"] }
+
+# Everything: all backends, config formats, and mock
+observe-rs = { version = "0.1", features = ["full"] }
+```
+
 ## Build Size Comparison
 
 | Feature Combination | Description | Binary Size | Size (KB) | Relative to Minimal |
@@ -239,7 +257,7 @@ For the smallest binary size:
 
 ```toml
 [dependencies]
-observability-kit = { version = "0.1", default-features = false, features = ["prometheus"] }
+observe-rs = { version = "0.1", default-features = false, features = ["prometheus"] }
 ```
 
 ### Full Build
@@ -248,7 +266,7 @@ For all features:
 
 ```toml
 [dependencies]
-observability-kit = { version = "0.1", features = ["full"] }
+observe-rs = { version = "0.1", features = ["full"] }
 ```
 
 ## Running the Example

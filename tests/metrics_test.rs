@@ -4,7 +4,7 @@
 
 #[cfg(feature = "prometheus")]
 mod prometheus_tests {
-    use observability_kit::backends::prometheus::prometheus_backend::{counter, gauge};
+    use observe_rs::backends::prometheus::prometheus_backend::{counter, gauge};
 
     #[test]
     fn test_counter_basic_operations() {
@@ -74,7 +74,7 @@ mod prometheus_tests {
 
 #[cfg(feature = "mock")]
 mod mock_tests {
-    use observability_kit::backends::mock::{test_counter, test_gauge, test_histogram};
+    use observe_rs::backends::mock::{test_counter, test_gauge, test_histogram};
 
     #[test]
     fn test_mock_counter() {
@@ -129,8 +129,8 @@ mod mock_tests {
 
     #[test]
     fn test_mock_counter_clone_shares_state() {
-        use observability_kit::backends::mock::MockCounter;
-        use observability_kit::core::metrics::CounterTrait;
+        use observe_rs::backends::mock::MockCounter;
+        use observe_rs::core::metrics::CounterTrait;
 
         let counter1 = MockCounter::new();
         let counter2 = counter1.clone();

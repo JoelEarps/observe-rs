@@ -53,7 +53,7 @@ echo "Building baseline (minimal library)..."
 cargo clean --quiet
 cargo build --release --lib --no-default-features --features prometheus --quiet 2>/dev/null
 # Find the library file
-lib_file=$(find target/release/deps -name "libobservability_kit*.rlib" 2>/dev/null | head -1)
+lib_file=$(find target/release/deps -name "libobserve_rs*.rlib" 2>/dev/null | head -1)
 if [ -z "$lib_file" ]; then
     echo "Error: Could not find library file" >&2
     exit 1
@@ -79,9 +79,11 @@ for item in "${FEATURES[@]}"; do
     if has_standalone "$features"; then
         # Build example binary (crate has no default binary; standalone example uses standalone feature)
         if [ "$features" = "full" ]; then
-            cargo build --release --example standalone-prometheus --features "$features" --quiet 2>/dev/null
+            cargo build --release --features "$features" --quiet 2>/dev/null
+            size_file="target/release/observe-rs"
         else
-            cargo build --release --example standalone-prometheus --no-default-features --features "$features" --quiet 2>/dev/null
+            cargo build --release --no-default-features --features "$features" --quiet 2>/dev/null
+            size_file="target/release/observe-rs"
         fi
         size_file="target/release/examples/standalone_prometheus"
         size_type="binary"
@@ -93,7 +95,7 @@ for item in "${FEATURES[@]}"; do
             cargo build --release --lib --no-default-features --features "$features" --quiet 2>/dev/null
         fi
         # Find the library file
-        size_file=$(find target/release/deps -name "libobservability_kit*.rlib" 2>/dev/null | head -1)
+        size_file=$(find target/release/deps -name "libobserve_rs*.rlib" 2>/dev/null | head -1)
         size_type="library"
     fi
     

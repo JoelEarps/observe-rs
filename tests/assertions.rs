@@ -5,8 +5,8 @@
 
 #[cfg(feature = "mock")]
 pub mod helpers {
-    use observability_kit::backends::mock::MockHistogram;
-    use observability_kit::core::metrics::{CounterTrait, GaugeTrait, Metric};
+    use observe_rs::backends::mock::MockHistogram;
+    use observe_rs::core::metrics::{CounterTrait, GaugeTrait, Metric};
 
     /// Assert that a counter has the expected value.
     ///
@@ -105,7 +105,7 @@ pub mod helpers {
 #[cfg(feature = "mock")]
 mod tests {
     use super::helpers::*;
-    use observability_kit::backends::mock::{test_counter, test_gauge, test_histogram};
+    use observe_rs::backends::mock::{test_counter, test_gauge, test_histogram};
 
     #[test]
     fn test_assert_counter_value() {

@@ -1,4 +1,4 @@
-//! Core traits and types for the observability kit.
+//! Core traits and types for observe-rs.
 //!
 //! This module contains backend-agnostic abstractions that any metric
 //! system can implement.

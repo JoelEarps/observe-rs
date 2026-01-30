@@ -6,8 +6,8 @@
 //! # Example
 //!
 //! ```ignore
-//! use observability_kit::http::standalone::StandaloneServer;
-//! use observability_kit::backends::prometheus::prometheus_backend::PrometheusBackend;
+//! use observe_rs::http::standalone::StandaloneServer;
+//! use observe_rs::backends::prometheus::PrometheusBackend;
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -148,8 +148,8 @@ impl<B: MetricBackend> Clone for AppState<B> {
 ///
 /// # Example
 /// ```ignore
-/// use observability_kit::http::standalone::StandaloneServer;
-/// use observability_kit::backends::prometheus::PrometheusBackend;
+/// use observe_rs::http::standalone::StandaloneServer;
+/// use observe_rs::backends::prometheus::PrometheusBackend;
 ///
 /// let server = StandaloneServer::<PrometheusBackend>::builder()
 ///     .port(9090)

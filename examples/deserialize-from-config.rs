@@ -9,13 +9,13 @@
 //! ```
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("🔭 Observability Kit - Deserialize from Config Example");
+    println!("🔭 observe-rs - Deserialize from Config Example");
     println!("=====================================================\n");
 
     #[cfg(all(feature = "prometheus", feature = "json-config"))]
     {
-        use observability_kit::backends::prometheus::prometheus_backend::PrometheusBackend;
-        use observability_kit::prelude::{
+        use observe_rs::backends::prometheus::prometheus_backend::PrometheusBackend;
+        use observe_rs::prelude::{
             load_json_file, load_json_str, ConfiguredRegistry, DeserializeError,
         };
         // Option 1: Load from a file

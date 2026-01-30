@@ -65,8 +65,8 @@ pub trait MetricBackend: Send + Sync + 'static {
 ///
 /// # Example
 /// ```ignore
-/// use observability_kit::core::registry::ObservabilityRegistry;
-/// use observability_kit::backends::prometheus::PrometheusBackend;
+/// use observe_rs::core::registry::ObservabilityRegistry;
+/// use observe_rs::backends::prometheus::PrometheusBackend;
 ///
 /// let mut registry = ObservabilityRegistry::<PrometheusBackend>::new();
 ///
